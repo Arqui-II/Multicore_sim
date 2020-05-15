@@ -8,18 +8,19 @@
 
 #include <iostream>
 #include <bitset>
-
-#include <instruction_gen/Instruction_gen.h>
+#include <core/Core.h>
 
 int main() {
 
-	Instruction_gen *generator = new Instruction_gen();
+	Core core(0);
 
-	std::cout << "!!!Hello World!!!" << std::endl; // prints !!!Hello World!!!
+	core.startCore();
 
-	std::cout << generator->getInst().data << std::endl;
+	for(int i=0; i<3; i++)
+		std::cout << "!!!Hello World!!!" << std::endl; // prints !!!Hello World!!!
 
-	delete generator;
+	core.stopCore();
+
 
 	return 0;
 }
