@@ -2,25 +2,29 @@
 // Name        : Multicore_sim.cpp
 // Author      : Juan Pablo Brenes C.
 // Version     :
-// Copyright   : 
+// Copyright   :
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
 #include <iostream>
 #include <bitset>
-#include <core/Core.h>
+#include <instruction_gen/Instruction_gen.h>
+#include <processor/Processor.h>
+#include <logger/Logger.h>
+#include <unistd.h>
+#include <random>
 
 int main() {
 
-	Core core(0);
+	Logger logger;
+	Instruction_gen instGenerator;
+	Processor chip0(&instGenerator, &logger);
 
-	core.startCore();
+	chip0.startCores();
 
-	for(int i=0; i<3; i++)
-		std::cout << "!!!Hello World!!!" << std::endl; // prints !!!Hello World!!!
+	std::this_thread::sleep_for(std::chrono::seconds(30));
 
-	core.stopCore();
-
+	chip0.stopCores();
 
 	return 0;
 }
