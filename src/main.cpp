@@ -8,23 +8,29 @@
 
 #include <iostream>
 #include <bitset>
-#include <instruction_gen/Instruction_gen.h>
+#include <processor/Instruction_gen.h>
 #include <processor/Processor.h>
 #include <logger/Logger.h>
 #include <unistd.h>
 #include <random>
+#include <limits.h>
 
 int main() {
 
 	Logger logger;
 	Instruction_gen instGenerator;
 	Processor chip0(&instGenerator, &logger);
+	//Processor chip1(&instGenerator, &logger);
 
+	instGenerator.start();
 	chip0.startCores();
+	//chip1.startCores();
 
-	std::this_thread::sleep_for(std::chrono::seconds(30));
+	std::this_thread::sleep_for(std::chrono::seconds(15));
 
 	chip0.stopCores();
+	instGenerator.stop();
+	//chip1.stopCores();
 
 	return 0;
 }

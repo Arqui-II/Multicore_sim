@@ -20,17 +20,25 @@ inline bool checkFile(const std::string &name) {
 Logger::Logger() {
 	_logPath = getPath() + FILE_NAME;
 
-	if (!checkFile(_logPath)) std::ofstream output(_logPath);
+	if (!checkFile(_logPath)) //Create file
+		std::ofstream output(_logPath);
+	else { //Remove and create new
+		std::remove(_logPath.c_str());
+		std::ofstream output(_logPath);
+	}
 
-	_logFile.open(_logPath);
+	_logFile.open(_logPath); //Open file
 }
 
 Logger::~Logger() {
-// TODO Auto-generated destructor stub
 }
 
 void Logger::write(const std::string &pMessage) {
 	_fileMutex.lock();
+//	std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+//	std::stringstream ss;
+//	ss << "[" << std::ctime(&now) << "] " << pMessage;
+	std::cout << pMessage;
 	_logFile << pMessage;
 	_fileMutex.unlock();
 }
