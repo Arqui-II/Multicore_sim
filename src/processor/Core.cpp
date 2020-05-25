@@ -15,12 +15,13 @@ int Core::nextID = 0;
  * Constructor that sets the Core ID
  * @param pCoreID Core ID
  */
-Core::Core(int pChipID, int pCoreID, Instruction_gen *pGenerator, Logger *pLogger) {
+Core::Core(Controller *pController, int pChipID, int pCoreID, Instruction_gen *pGenerator, Logger *pLogger) {
 	_chipID = pChipID;
 	_coreID = pCoreID;
 	_generator = pGenerator;
 	_logger = pLogger;
-	_cacheL1 = new CacheL1(_chipID, _coreID, _logger);
+	_controller = pController;
+	_cacheL1 = new CacheL1(pController, _chipID, _coreID, _logger);
 	_running = false;
 	_globalID = nextID++;
 }
@@ -29,7 +30,6 @@ Core::Core(int pChipID, int pCoreID, Instruction_gen *pGenerator, Logger *pLogge
  * Destructor
  */
 Core::~Core() {
-	delete _cacheL1;
 }
 
 /**
@@ -58,7 +58,7 @@ void Core::work() {
 				+ std::to_string(inst.op) + " Data: " + std::to_string(inst.data) + "\n";
 
 		_logger->write(msg);
-		manage(inst);
+		int value = manage(inst);
 	}
 
 }
@@ -79,12 +79,13 @@ void Core::stopCore() {
 	_running = false;
 	_thread.join();
 	_logger->write("Chip: " + std::to_string(_chipID) + " Core: " + std::to_string(_coreID) + " STOPPED... \n");
-	_cacheL1->print();
 }
 
-void Core::manage(Instruction_gen::Instruction &pInstruction) {
+int Core::manage(Instruction_gen::Instruction &pInstruction) {
+	int value = -1;
 	switch (pInstruction.op) {
 	case cons::inst::TYPES::READ:
+		value = _cacheL1->request(pInstruction.op, pInstruction.dest, pInstruction.data);
 		std::this_thread::sleep_for(std::chrono::seconds((int) cons::BASE_TIME * cons::multipliers::READ));
 		break;
 
@@ -93,8 +94,10 @@ void Core::manage(Instruction_gen::Instruction &pInstruction) {
 		break;
 
 	case cons::inst::TYPES::WRITE:
-		_cacheL1->write(pInstruction.dest, pInstruction.data);
+		//_cacheL1->write(pInstruction.dest, pInstruction.data);
 		std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * cons::multipliers::WRITE));
 		break;
 	}
+
+	return value;
 }

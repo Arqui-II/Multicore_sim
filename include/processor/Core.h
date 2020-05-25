@@ -12,7 +12,9 @@
 #include <Constants.h>
 #include <processor/Instruction_gen.h>
 #include <memory/CacheL1.h>
+#include <memory/Controller.h>
 #include <logger/Logger.h>
+//#include <bus/BusL1.h>
 
 class Core {
 
@@ -26,14 +28,18 @@ private:
 	std::thread _thread;
 
 	Instruction_gen *_generator;
-	CacheL1 *_cacheL1;
+	//BusL1 *_busL1;
 	Logger *_logger;
 
+	CacheL1 *_cacheL1;
+	Controller *_controller;
+
 	void work();
-	void manage(Instruction_gen::Instruction &pInstruction);
+	int manage(Instruction_gen::Instruction &pInstruction);
 
 public:
-	Core(int pChipID, int pCoreID, Instruction_gen *pGenerator, Logger *pLogger);
+	Core(/*BusL1 *pBusL1, */Controller *pController, int pChipID, int pCoreID, Instruction_gen *pGenerator,
+			Logger *pLogger);
 	virtual ~Core();
 
 	void setCoreID(int pCoreID);

@@ -87,7 +87,9 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="memory|cache|logger|processor|core|instruction_gen|src.instruction_gen" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+                        <entry excluding="bus|memory|cache|logger|processor|core|instruction_gen|src.instruction_gen" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+                        						
+                        <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/bus"/>
                         						
                         <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/logger"/>
                         						
@@ -175,6 +177,8 @@
                                 								
                                 <option id="gnu.cpp.compiler.option.dialect.std.896467257" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++11" valueType="enumerated"/>
                                 								
+                                <option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="true" id="gnu.cpp.compiler.option.preprocessor.def.1953612483" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols"/>
+                                								
                                 <inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.136123083" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
                                 							
                             </tool>
@@ -209,7 +213,9 @@
                     					
                     <sourceEntries>
                         						
-                        <entry excluding="memory|cache|logger|processor|core|instruction_gen|src.instruction_gen" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+                        <entry excluding="bus|memory|cache|logger|processor|core|instruction_gen|src.instruction_gen" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+                        						
+                        <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/bus"/>
                         						
                         <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/logger"/>
                         						
@@ -235,36 +241,6 @@
         	
     </storageModule>
     	
-    <storageModule moduleId="scannerConfiguration">
-        		
-        <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-        		
-        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.1108575991;cdt.managedbuild.config.gnu.cross.exe.debug.1108575991.;cdt.managedbuild.tool.gnu.cross.c.compiler.297200650;cdt.managedbuild.tool.gnu.c.compiler.input.1022857649">
-            			
-            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-            		
-        </scannerConfigBuildInfo>
-        		
-        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.25204666;cdt.managedbuild.config.gnu.cross.exe.release.25204666.;cdt.managedbuild.tool.gnu.cross.c.compiler.1065978474;cdt.managedbuild.tool.gnu.c.compiler.input.1147602454">
-            			
-            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-            		
-        </scannerConfigBuildInfo>
-        		
-        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.25204666;cdt.managedbuild.config.gnu.cross.exe.release.25204666.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1092040808;cdt.managedbuild.tool.gnu.cpp.compiler.input.1617308506">
-            			
-            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-            		
-        </scannerConfigBuildInfo>
-        		
-        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.1108575991;cdt.managedbuild.config.gnu.cross.exe.debug.1108575991.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1376403715;cdt.managedbuild.tool.gnu.cpp.compiler.input.1809422052">
-            			
-            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-            		
-        </scannerConfigBuildInfo>
-        	
-    </storageModule>
-    	
     <storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
     	
     <storageModule moduleId="refreshScope" versionNumber="2">
@@ -286,5 +262,47 @@
     <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
     	
     <storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+    	
+    <storageModule moduleId="scannerConfiguration">
+        		
+        <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.25204666;cdt.managedbuild.config.gnu.cross.exe.release.25204666.;cdt.managedbuild.tool.gnu.cross.c.compiler.1215045189;cdt.managedbuild.tool.gnu.c.compiler.input.1108951020">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.1108575991;cdt.managedbuild.config.gnu.cross.exe.debug.1108575991.;cdt.managedbuild.tool.gnu.cross.c.compiler.297200650;cdt.managedbuild.tool.gnu.c.compiler.input.1022857649">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.25204666;cdt.managedbuild.config.gnu.cross.exe.release.25204666.;cdt.managedbuild.tool.gnu.cross.c.compiler.1065978474;cdt.managedbuild.tool.gnu.c.compiler.input.1147602454">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.25204666;cdt.managedbuild.config.gnu.cross.exe.release.25204666.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1092040808;cdt.managedbuild.tool.gnu.cpp.compiler.input.1617308506">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.25204666;cdt.managedbuild.config.gnu.cross.exe.release.25204666.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.768349524;cdt.managedbuild.tool.gnu.cpp.compiler.input.136123083">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.1108575991;cdt.managedbuild.config.gnu.cross.exe.debug.1108575991.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.1376403715;cdt.managedbuild.tool.gnu.cpp.compiler.input.1809422052">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
+        	
+    </storageModule>
     
 </cproject>

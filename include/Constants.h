@@ -14,7 +14,7 @@ namespace cons {
 
 constexpr int BASE_TIME = 2;
 
-namespace inst {
+namespace inst { //Instructions
 enum TYPES {
 	READ, CALC, WRITE
 };
@@ -23,7 +23,7 @@ constexpr int MAX_DATA = USHRT_MAX;
 constexpr int MAX_INST = 20;
 }
 
-namespace multipliers {
+namespace multipliers { //Frecuency multipliers
 constexpr int CALC = 1;
 constexpr int READ = 3;
 constexpr int WRITE = 4;
@@ -32,7 +32,7 @@ constexpr int L2 = 1;
 constexpr double RAM = 1.5;
 }
 
-namespace memory {
+namespace memory { //Memory
 enum L1_STATES {
 	M, S, I
 };
@@ -40,9 +40,16 @@ enum L2_STATES {
 	DM, DS, DI
 };
 
+constexpr int L1_NUMBER = 2;
 constexpr int L1_SIZE = 2;
 constexpr int L2_SIZE = 4;
 constexpr int RAM_SIZE = 16;
+}
+
+namespace bus { //Buses
+enum EVENTS {
+	READ_MISS, WRITE_MISS
+};
 }
 
 }
