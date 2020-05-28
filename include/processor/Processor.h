@@ -11,6 +11,7 @@
 #include <processor/Core.h>
 #include <processor/Instruction_gen.h>
 #include <logger/Logger.h>
+#include <memory/RAM.h>
 #include <memory/Controller.h>
 #include <memory/CacheL2.h>
 //#include <bus/BusL1.h>
@@ -24,13 +25,14 @@ private:
 	int _chipID;
 
 	Instruction_gen *_instructionGen;
-	CacheL2 _cacheL2;
-	Controller _controller;
+	RAM *_ram;
 	Logger *_logger;
+	Controller _controller;
+	CacheL2 _cacheL2;
 	Core *_core0, *_core1;
 
 public:
-	Processor(Instruction_gen *pGenerator, Logger *pLogger);
+	Processor(Instruction_gen *pGenerator, RAM *pRam, Logger *pLogger);
 	virtual ~Processor();
 
 	void setControllerExtL2(CacheL2 *pExtL2);

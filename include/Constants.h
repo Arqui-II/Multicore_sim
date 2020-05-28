@@ -9,10 +9,12 @@
 #define CONSTANTS_H_
 
 #include <limits.h>
+#include <string>
 
 namespace cons {
 
 constexpr int BASE_TIME = 2;
+constexpr int NUMBER_OF_CORES = 2;
 
 namespace inst { //Instructions
 enum TYPES {
@@ -24,7 +26,7 @@ constexpr int MAX_INST = 20;
 }
 
 namespace multipliers { //Frecuency multipliers
-constexpr int CALC = 1;
+constexpr int CALC = 2;
 constexpr int READ = 3;
 constexpr int WRITE = 4;
 constexpr double L1 = 0.5;
@@ -50,6 +52,10 @@ namespace bus { //Buses
 enum EVENTS {
 	READ_MISS, WRITE_MISS
 };
+}
+
+namespace logger {
+constexpr const char *TYPES[] = { "READ", "CALC", "WRITE" };
 }
 
 }

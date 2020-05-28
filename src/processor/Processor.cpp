@@ -9,15 +9,17 @@
 
 int Processor::counterID = 0;
 
-Processor::Processor(Instruction_gen *pGenerator, Logger *pLogger) : _controller(), _cacheL2() {
+Processor::Processor(Instruction_gen *pGenerator, RAM *pRam, Logger *pLogger) :
+		_instructionGen(pGenerator), _ram(pRam), _logger(pLogger), _controller(), _cacheL2(_ram, &_controller) {
 	_chipID = counterID++;
-	_instructionGen = pGenerator;
-	_logger = pLogger;
 	_controller.setLocalL2(&_cacheL2);
 	_core0 = new Core(&_controller, _chipID, 0, _instructionGen, _logger);
 	_core1 = new Core(&_controller, _chipID, 1, _instructionGen, _logger);
 }
 
+/**
+ * Destructor
+ */
 Processor::~Processor() {
 	delete (_core0);
 	delete (_core1);
@@ -31,15 +33,19 @@ CacheL2* Processor::getCacheL2() {
 	return &this->_cacheL2;
 }
 
+/**
+ * Starts the thread of each cores
+ */
 void Processor::startCores() {
-//_busL1.start();
 	_core0->startCore();
 	_core1->startCore();
 }
 
+/**
+ * Stops the thread of each cores
+ */
 void Processor::stopCores() {
 	_core0->stopCore();
 	_core1->stopCore();
-//_busL1.stop();
 }
 

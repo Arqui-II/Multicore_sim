@@ -16,6 +16,7 @@
 #include <memory/CacheL2.h>
 
 class CacheL1;
+class CacheL2;
 
 class Controller {
 
@@ -26,10 +27,15 @@ public:
 	Controller();
 	virtual ~Controller();
 
-	int notify(BusEvent pEvent);
 	void addL1(CacheL1 *pCacheL1, int pCoreID);
 	void setLocalL2(CacheL2 *pLocalL2);
 	void setExternalL2(CacheL2 *pExternalL2);
+
+	int notify(BusEvent pEvent);
+	void notifyL1(BusEvent pEvent);
+	void notifyExternalL2(const BusEvent pEvent);
+	int requestL2(BusEvent pEvent);
+	void writeRequestL2(int pAddress, int pData, int pOwner);
 
 	void start();
 	void stop();
@@ -38,6 +44,7 @@ private:
 	int _id;
 	bool _runningL1;
 	std::thread _threadL1;
+	std::mutex _mutexNotifyL1, _mutexRead;
 
 	CacheL1 *_memoriesL1[cons::memory::L1_NUMBER];
 	CacheL2 *_localL2;
@@ -46,7 +53,6 @@ private:
 
 	int read(int pAddress);
 
-	void notifyL1(BusEvent pEvent, int pDest);
 	//BusEvent getEvent();
 	void monitorL1();
 

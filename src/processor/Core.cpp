@@ -5,9 +5,9 @@
  *      Author: Juan Pablo Brenes C.
  */
 
-#include <processor/Core.h>
 #include <iostream>
 #include <chrono>
+#include <processor/Core.h>
 
 int Core::nextID = 0;
 
@@ -55,10 +55,10 @@ void Core::work() {
 		Instruction_gen::Instruction inst;
 		_generator->getNew(inst);
 		std::string msg = "Chip: " + std::to_string(_chipID) + " Core: " + std::to_string(_coreID) + " Inst: "
-				+ std::to_string(inst.op) + " Data: " + std::to_string(inst.data) + "\n";
+				+ cons::logger::TYPES[inst.op] + " Data: " + std::to_string(inst.data) + "\n";
 
 		_logger->write(msg);
-		int value = manage(inst);
+		manage(inst);
 	}
 
 }
@@ -94,7 +94,7 @@ int Core::manage(Instruction_gen::Instruction &pInstruction) {
 		break;
 
 	case cons::inst::TYPES::WRITE:
-		//_cacheL1->write(pInstruction.dest, pInstruction.data);
+		value = _cacheL1->request(pInstruction.op, pInstruction.dest, pInstruction.data);
 		std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * cons::multipliers::WRITE));
 		break;
 	}

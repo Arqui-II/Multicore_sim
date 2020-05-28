@@ -9,7 +9,8 @@
 
 int Controller::nextID = 0; //Instance counter
 
-Controller::Controller() {
+Controller::Controller() :
+		_localL2(nullptr), _externalL2(nullptr) {
 	_id = nextID++;
 	_runningL1 = false;
 
@@ -35,14 +36,30 @@ void Controller::stop() {
 	_threadL1.join();
 }
 
+/**
+ * Adds the L1 caches in the current chip
+ *
+ * @param pCacheL1 CacheL1 class pointer
+ * @param pCoreID ID of the core who owns the L1
+ */
 void Controller::addL1(CacheL1 *pCacheL1, int pCoreID) {
 	_memoriesL1[pCoreID] = pCacheL1;
 }
 
+/**
+ * Sets the cache L2 of the current chip
+ *
+ * @param pLocalL2 CacheL2 class pointer
+ */
 void Controller::setLocalL2(CacheL2 *pLocalL2) {
 	this->_localL2 = pLocalL2;
 }
 
+/**
+ * Sets the cache L2 of the other chip
+ *
+ * @param pExternalL2 CacheL2 class pointer
+ */
 void Controller::setExternalL2(CacheL2 *pExternalL2) {
 	this->_externalL2 = pExternalL2;
 }
@@ -53,16 +70,54 @@ void Controller::setExternalL2(CacheL2 *pExternalL2) {
 //	return event;
 //}
 
-int Controller::notify(BusEvent pEvent) {
-	//_l1BusEvents.push(pEvent);
-	return _localL2->request(pEvent);
+int Controller::requestL2(BusEvent pEvent) {
+	std::lock_guard<std::mutex> lock(_mutexRead);
+	int value = -1;
+	if (_localL2->checkHit(pEvent.address)) { //DATA IS LOCATED IN THE LOCAL L2
+		value = _localL2->localRequest(pEvent);
+	}
+
+	else if (_externalL2->checkHit(pEvent.address) && pEvent.event == cons::bus::EVENTS::READ_MISS) { //DATA IS LOCATED IN EXTERNAL L2
+		value = _externalL2->externalRead(pEvent);
+		this->_localL2->loadFromExternal(pEvent.address, value, pEvent.sender); //Write on local L2
+	}
+
+	else {
+		value = _localL2->loadFromRAM(pEvent.address, pEvent.sender);
+	}
+
+	return value;
 }
 
-void Controller::notifyL1(BusEvent pEvent, int pDest) {
-	_memoriesL1[pDest]->notifyEvent(pEvent);
+void Controller::writeRequestL2(int pAddress, int pData, int pOwner) {
+	this->_localL2->writeThroughL1(pAddress, pData, pOwner);
+}
+
+int Controller::notify(BusEvent pEvent) {
+	//_l1BusEvents.push(pEvent);
+	//return _localL2->request(pEvent);
+	return 0;
+}
+
+void Controller::notifyL1(BusEvent pEvent) {
+	if (pEvent.sender == 0) {
+		std::lock_guard<std::mutex> lock(_mutexNotifyL1);
+		_memoriesL1[1]->notifyEvent(pEvent);
+	}
+
+	else {
+		std::lock_guard<std::mutex> lock(_mutexNotifyL1);
+		_memoriesL1[0]->notifyEvent(pEvent);
+	}
+
 }
 
 int Controller::read(int pAddress) {
 
+	return 0;
+}
+
+void Controller::notifyExternalL2(const BusEvent pEvent) {
+	this->_externalL2->externalNotify(pEvent);
 }
 
