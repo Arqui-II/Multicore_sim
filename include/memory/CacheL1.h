@@ -30,21 +30,23 @@ private:
 		int data;
 	};
 
+	Controller *_controller;
 	int _chipID, _coreID;
+	Logger *_logger;
+
 	int _currentData;
 	bool _running;
 	Block _cacheL1[cons::memory::L1_SIZE];
 	std::queue<BusEvent> _busEvents;
-	Logger *_logger;
-	Controller *_controller;
 
 	std::thread _thread;
 	std::mutex _mutex;
 
 	//void onNotify(Message pMessage);
+	void init();
 	void busMonitor();
 	BusEvent getEvent();
-	int write(int pAddress, int pData);
+	int write(int pAddress, int pData, int pState);
 	int read(int pAddress);
 
 public:
