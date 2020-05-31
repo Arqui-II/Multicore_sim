@@ -11,10 +11,14 @@
 #include <memory/RAM.h>
 #include <processor/Processor.h>
 #include <logger/Logger.h>
+#include <display/Display.h>
 #include <unistd.h>
 
 int main() {
 
+	//std::cout << "Multicore system simulation..." << std::endl << std::endl;
+
+	Display display;
 	Logger logger;
 	Instruction_gen instGenerator;
 	RAM ram;
@@ -30,8 +34,8 @@ int main() {
 	std::this_thread::sleep_for(std::chrono::seconds(15));
 
 	chip0.stopCores();
-	instGenerator.stop();
 	chip1.stopCores();
+	instGenerator.stop();
 
 	return 0;
 }

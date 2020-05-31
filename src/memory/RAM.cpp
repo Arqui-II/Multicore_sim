@@ -19,7 +19,7 @@ RAM::~RAM() {
  */
 void RAM::init() {
 	for (int i = 0; i < cons::memory::RAM_SIZE; i++) {
-		_ram[i].data = 0;
+		_ram[i].data = i;
 		_ram[i].owners[0] = -1;
 		_ram[i].owners[1] = -1;
 	}

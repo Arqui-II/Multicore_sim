@@ -9,6 +9,8 @@
 #define CORE_H_
 
 #include <thread>
+#include <sstream>
+#include <string>
 #include <Constants.h>
 #include <processor/Instruction_gen.h>
 #include <memory/CacheL1.h>
@@ -24,10 +26,11 @@ protected:
 private:
 	int _coreID, _chipID;
 	int _globalID;
-	bool _running;
+	volatile bool _running;
 	std::thread _thread;
 
 	Instruction_gen *_generator;
+	Instruction_gen::Instruction _currentInst;
 	//BusL1 *_busL1;
 	Logger *_logger;
 
@@ -36,6 +39,8 @@ private:
 
 	void work();
 	int manage(Instruction_gen::Instruction &pInstruction);
+
+	void printInst(const Instruction_gen::Instruction pInst);
 
 public:
 	Core(/*BusL1 *pBusL1, */Controller *pController, int pChipID, int pCoreID, Instruction_gen *pGenerator,

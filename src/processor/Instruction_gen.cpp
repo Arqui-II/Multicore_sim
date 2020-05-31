@@ -62,10 +62,12 @@ void Instruction_gen::push(Instruction pInstruction) {
  *
  * @param instruction Instruction that the Core will get
  */
-void Instruction_gen::getNew(Instruction &instruction) {
+void Instruction_gen::getNew(const int pChipID, const int pCoreID, Instruction &instruction) {
 	std::unique_lock<std::mutex> lock(_mutex);
 	_cond.wait(lock, [this] {return !_queue.empty();});
 	instruction = _queue.front();
+	instruction.chip = pChipID;
+	instruction.core = pCoreID;
 	_queue.pop();
 }
 

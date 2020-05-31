@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include <thread>
 #include <mutex>
 #include <chrono>
 #include <ctime>
@@ -21,14 +22,21 @@
 class Logger {
 
 private:
-
 	std::mutex _fileMutex;
 	std::string _logPath;
 	std::ofstream _logFile;
+	//std::thread _thread;
+
+	//volatile bool _running;
+
+	//void display();
 
 public:
 	Logger();
 	virtual ~Logger();
+
+	//void start();
+	//void stop();
 
 	void write(const std::string &pMessage);
 };

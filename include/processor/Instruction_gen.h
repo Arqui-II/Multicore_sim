@@ -34,7 +34,7 @@ public:
 
 	void start();
 	void stop();
-	void getNew(Instruction &instruction);
+	void getNew(const int pChipID, const int pCoreID, Instruction &instruction);
 
 private:
 	const double POISSON_MEAN = 10.1;
@@ -46,7 +46,7 @@ private:
 	std::mutex _mutex;
 	std::condition_variable _cond;
 	std::queue<Instruction> _queue;
-	bool _running;
+	volatile bool _running;
 
 	int getInstructionType();
 	int getRandomAddress();

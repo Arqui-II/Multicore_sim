@@ -26,9 +26,9 @@ constexpr int MAX_INST = 20;
 }
 
 namespace multipliers { //Frecuency multipliers
-constexpr int CALC = 2;
-constexpr int READ = 3;
-constexpr int WRITE = 4;
+constexpr int CALC = 1;
+constexpr int READ = 2;
+constexpr int WRITE = 3;
 constexpr double L1 = 0.5;
 constexpr int L2 = 1;
 constexpr double RAM = 1.5;

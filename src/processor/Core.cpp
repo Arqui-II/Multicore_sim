@@ -52,13 +52,17 @@ int Core::getCoreID() {
 
 void Core::work() {
 	while (_running) {
-		Instruction_gen::Instruction inst;
-		_generator->getNew(inst);
-		std::string msg = "Chip: " + std::to_string(_chipID) + " Core: " + std::to_string(_coreID) + " Inst: "
-				+ cons::logger::TYPES[inst.op] + " Data: " + std::to_string(inst.data) + "\n";
+		//Instruction_gen::Instruction inst;
+		_generator->getNew(this->_chipID, this->_coreID, _currentInst);
+//		std::string msg = "Chip: " + std::to_string(inst.chip) + " Core: " + std::to_string(inst.core)
+//				+ " Inst: " + cons::logger::TYPES[inst.op] + " Data: " + std::to_string(inst.data) + "\n";
 
-		_logger->write(msg);
-		manage(inst);
+//_logger->write(msg);
+		//this->printInst(_currentInst);
+		int value = manage(_currentInst);
+//		if (inst.op == cons::inst::TYPES::READ)
+//			std::cout << "P" << _chipID << "," << _coreID << " " << "Readed value: " << std::to_string(value)
+//					<< std::endl;
 	}
 
 }
@@ -78,7 +82,8 @@ void Core::startCore() {
 void Core::stopCore() {
 	_running = false;
 	_thread.join();
-	_logger->write("Chip: " + std::to_string(_chipID) + " Core: " + std::to_string(_coreID) + " STOPPED... \n");
+	_logger->write(
+			"Chip: " + std::to_string(_chipID) + " Core: " + std::to_string(_coreID) + " STOPPED... \n");
 }
 
 int Core::manage(Instruction_gen::Instruction &pInstruction) {
@@ -100,4 +105,24 @@ int Core::manage(Instruction_gen::Instruction &pInstruction) {
 	}
 
 	return value;
+}
+
+void Core::printInst(const Instruction_gen::Instruction pInst) {
+	std::stringstream out;
+	out << "P" << pInst.chip << "," << pInst.core << " ";
+	out << cons::logger::TYPES[pInst.op];
+	switch (pInst.op) {
+	case cons::inst::TYPES::CALC:
+		out << std::endl;
+		break;
+	case cons::inst::TYPES::READ:
+		out << " " << pInst.dest << std::endl;
+		break;
+	case cons::inst::TYPES::WRITE:
+		out << " " << pInst.dest << ", " << pInst.data << std::endl;
+		break;
+	}
+
+	std::cout << out.str();
+
 }
