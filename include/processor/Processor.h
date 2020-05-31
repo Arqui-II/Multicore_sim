@@ -27,13 +27,15 @@ private:
 	Instruction_gen *_instructionGen;
 	RAM *_ram;
 	Logger *_logger;
-	Controller _controller;
+
 	CacheL2 _cacheL2;
 	Core *_core0, *_core1;
 
 public:
 	Processor(Instruction_gen *pGenerator, RAM *pRam, Logger *pLogger);
 	virtual ~Processor();
+	
+	Controller _controller;
 
 	void setControllerExtL2(CacheL2 *pExtL2);
 	CacheL2* getCacheL2();

@@ -64,6 +64,10 @@ void Controller::setExternalL2(CacheL2 *pExternalL2) {
 	this->_externalL2 = pExternalL2;
 }
 
+CacheL1** Controller::getL1(){
+	return _memoriesL1;
+}
+
 //BusEvent Controller::getEvent() {
 //	BusEvent event = _l1BusEvents.front();
 //	_l1BusEvents.pop();
@@ -120,4 +124,3 @@ int Controller::read(int pAddress) {
 void Controller::notifyExternalL2(const BusEvent pEvent) {
 	this->_externalL2->externalNotify(pEvent);
 }
-

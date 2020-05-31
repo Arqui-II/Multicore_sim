@@ -37,6 +37,8 @@ public:
 	int requestL2(BusEvent pEvent);
 	void writeRequestL2(int pAddress, int pData, int pOwner);
 
+	CacheL1** getL1();
+
 	void start();
 	void stop();
 

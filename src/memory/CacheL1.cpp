@@ -158,6 +158,10 @@ void CacheL1::setCurrentData(int pData) {
 	_currentData = pData;
 }
 
+CacheL1::Block* CacheL1::getCacheL1(){
+	return _cacheL1;
+}
+
 void CacheL1::print() {
 	std::cout << "Contents of cacheL1 of Core: " << std::to_string(_coreID) << std::endl;
 	for (int i = 0; i < cons::memory::L1_SIZE; ++i) {
@@ -167,4 +171,3 @@ void CacheL1::print() {
 				<< std::endl;
 	}
 }
-

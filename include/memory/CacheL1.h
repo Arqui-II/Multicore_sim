@@ -22,7 +22,7 @@ class Controller;
 
 class CacheL1 {
 
-private:
+public:
 	struct Block {
 		int state;
 		bool valid;
@@ -30,6 +30,21 @@ private:
 		int data;
 	};
 
+	CacheL1(Controller *pController, int pChipID, int pCoreID, Logger *pLogger);
+	virtual ~CacheL1();
+
+	int request(int pOp, int pAddress, int pData = 0);
+	void notifyEvent(BusEvent pEvent);
+
+	void setCurrentData(int pData);
+	Block* getCacheL1();
+
+	void start();
+	void stop();
+
+	void print();
+
+private:
 	Controller *_controller;
 	int _chipID, _coreID;
 	Logger *_logger;
@@ -48,20 +63,6 @@ private:
 	BusEvent getEvent();
 	int write(int pAddress, int pData, int pState);
 	int read(int pAddress);
-
-public:
-	CacheL1(Controller *pController, int pChipID, int pCoreID, Logger *pLogger);
-	virtual ~CacheL1();
-
-	int request(int pOp, int pAddress, int pData = 0);
-	void notifyEvent(BusEvent pEvent);
-
-	void setCurrentData(int pData);
-
-	void start();
-	void stop();
-
-	void print();
 };
 
 #endif /* CACHEL1_H_ */

@@ -10,7 +10,12 @@
 
 #include <curses.h>
 #include <thread>
+#include <iomanip>
 #include <chrono>
+#include <Constants.h>
+#include <memory/CacheL1.h>
+#include <memory/CacheL2.h>
+#include <memory/RAM.h>
 
 class Display {
 
@@ -19,12 +24,17 @@ private:
 
 	std::thread _thread;
 
-	int L1_WIN_SIZEY = 4;
+	int L1_WIN_SIZEY = 5;
 	int L1_WIN_SIZEX = 30;
 
 	volatile bool _running;
 	int _mainX, _mainY;
 	int _L1X, _L1Y;
+
+	CacheL1::Block *_chip0L1[cons::memory::L1_NUMBER];
+	CacheL1::Block *_chip1L1[cons::memory::L1_NUMBER];
+
+	void printL1();
 
 	void init();
 	void update();
@@ -35,6 +45,8 @@ public:
 
 	void start();
 	void stop();
+
+	void setChipL1(CacheL1 **pL1Array, int pChipID);
 
 };
 

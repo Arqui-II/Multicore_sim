@@ -56,6 +56,7 @@ enum EVENTS {
 
 namespace logger {
 constexpr const char *TYPES[] = { "READ", "CALC", "WRITE" };
+constexpr const char STATES_L1[] = { 'M', 'S', 'I' };
 }
 
 }
