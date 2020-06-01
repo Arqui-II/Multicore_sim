@@ -31,32 +31,22 @@ public:
 	void setLocalL2(CacheL2 *pLocalL2);
 	void setExternalL2(CacheL2 *pExternalL2);
 
-	int notify(BusEvent pEvent);
 	void notifyL1(BusEvent pEvent);
 	void notifyExternalL2(const BusEvent pEvent);
-	int requestL2(BusEvent pEvent);
-	void writeRequestL2(int pAddress, int pData, int pOwner);
+	void notifyL2(const BusEvent pEvent);
+	int readRequestL2(BusEvent pEvent);
+	void writeRequestL2(BusEvent pEvent);
 
 	CacheL1** getL1();
-
-	void start();
-	void stop();
+	CacheL2* getL2();
 
 private:
 	int _id;
-	bool _runningL1;
-	std::thread _threadL1;
-	std::mutex _mutexNotifyL1, _mutexRead;
+	std::mutex _mutex;
 
 	CacheL1 *_memoriesL1[cons::memory::L1_NUMBER];
 	CacheL2 *_localL2;
 	CacheL2 *_externalL2;
-	//std::queue<BusEvent> _l1BusEvents;
-
-	int read(int pAddress);
-
-	//BusEvent getEvent();
-	void monitorL1();
 
 };
 

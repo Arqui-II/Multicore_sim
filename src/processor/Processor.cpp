@@ -10,7 +10,7 @@
 int Processor::counterID = 0;
 
 Processor::Processor(Instruction_gen *pGenerator, RAM *pRam, Logger *pLogger) :
-		_instructionGen(pGenerator), _ram(pRam), _logger(pLogger), _controller(), _cacheL2(_ram, &_controller) {
+		_instructionGen(pGenerator), _ram(pRam), _logger(pLogger), _cacheL2(_ram, &_controller) {
 	_chipID = counterID++;
 	_controller.setLocalL2(&_cacheL2);
 	_core0 = new Core(&_controller, _chipID, 0, _instructionGen, _logger);
@@ -31,6 +31,19 @@ void Processor::setControllerExtL2(CacheL2 *pExtL2) {
 
 CacheL2* Processor::getCacheL2() {
 	return &this->_cacheL2;
+}
+
+Controller* Processor::getController() {
+	return &_controller;
+}
+
+Core* Processor::getCore(int pCoreID) {
+	if (pCoreID == 0)
+		return _core0;
+	else if (pCoreID == 1)
+		return _core1;
+	else
+		return nullptr;
 }
 
 /**

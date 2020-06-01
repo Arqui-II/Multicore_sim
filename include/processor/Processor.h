@@ -34,11 +34,14 @@ private:
 public:
 	Processor(Instruction_gen *pGenerator, RAM *pRam, Logger *pLogger);
 	virtual ~Processor();
-	
+
 	Controller _controller;
 
 	void setControllerExtL2(CacheL2 *pExtL2);
 	CacheL2* getCacheL2();
+
+	Controller* getController();
+	Core* getCore(int pCoreID);
 
 	void startCores();
 	void stopCores();

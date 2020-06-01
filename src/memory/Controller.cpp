@@ -12,28 +12,10 @@ int Controller::nextID = 0; //Instance counter
 Controller::Controller() :
 		_localL2(nullptr), _externalL2(nullptr) {
 	_id = nextID++;
-	_runningL1 = false;
 
 }
 
 Controller::~Controller() {
-}
-
-void Controller::monitorL1() {
-	while (_runningL1) {
-		//BusEvent event = this->getEvent();
-		//std::cout << "Controller received event from: " << std::to_string(event.sender) << std::endl;
-	}
-}
-
-void Controller::start() {
-	_runningL1 = true;
-	_threadL1 = std::thread(&Controller::monitorL1, this);
-}
-
-void Controller::stop() {
-	_runningL1 = false;
-	_threadL1.join();
 }
 
 /**
@@ -64,63 +46,72 @@ void Controller::setExternalL2(CacheL2 *pExternalL2) {
 	this->_externalL2 = pExternalL2;
 }
 
-CacheL1** Controller::getL1(){
+CacheL1** Controller::getL1() {
 	return _memoriesL1;
 }
 
-//BusEvent Controller::getEvent() {
-//	BusEvent event = _l1BusEvents.front();
-//	_l1BusEvents.pop();
-//	return event;
-//}
+CacheL2* Controller::getL2() {
+	return _localL2;
+}
 
-int Controller::requestL2(BusEvent pEvent) {
-	std::lock_guard<std::mutex> lock(_mutexRead);
+int Controller::readRequestL2(BusEvent pEvent) {
+	std::lock_guard<std::mutex> lock(_mutex);
 	int value = -1;
+	bool externalHit = _externalL2->checkHit(pEvent.address);
+
+	this->notifyL1(pEvent);
 	if (_localL2->checkHit(pEvent.address)) { //DATA IS LOCATED IN THE LOCAL L2
-		value = _localL2->localRequest(pEvent);
+		if (externalHit)
+			_externalL2->externalNotify(BusEvent { cons::bus::EVENTS::READ_HIT, pEvent.address });
+		value = _localL2->localRead(pEvent, externalHit);
 	}
 
-	else if (_externalL2->checkHit(pEvent.address) && pEvent.event == cons::bus::EVENTS::READ_MISS) { //DATA IS LOCATED IN EXTERNAL L2
+	else if (externalHit && pEvent.event == cons::bus::EVENTS::READ_MISS) { //DATA IS LOCATED IN EXTERNAL L2
 		value = _externalL2->externalRead(pEvent);
+		//std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * (int) cons::multipliers::L2));
 		this->_localL2->loadFromExternal(pEvent.address, value, pEvent.sender); //Write on local L2
 	}
 
-	else {
-		value = _localL2->loadFromRAM(pEvent.address, pEvent.sender);
+	else { //LOAD DATA FROM RAM
+		std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * (int) cons::multipliers::RAM));
+		value = _localL2->loadFromRAM(pEvent);
 	}
 
 	return value;
 }
 
-void Controller::writeRequestL2(int pAddress, int pData, int pOwner) {
-	this->_localL2->writeThroughL1(pAddress, pData, pOwner);
-}
-
-int Controller::notify(BusEvent pEvent) {
-	//_l1BusEvents.push(pEvent);
-	//return _localL2->request(pEvent);
-	return 0;
+void Controller::writeRequestL2(BusEvent pEvent) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	bool externalHit = _externalL2->checkHit(pEvent.address);
+	this->notifyL1(pEvent);
+	this->_localL2->localWrite(pEvent, externalHit);
 }
 
 void Controller::notifyL1(BusEvent pEvent) {
+	//std::lock_guard<std::mutex> lock(_mutex);
 	if (pEvent.sender == 0) {
-		std::lock_guard<std::mutex> lock(_mutexNotifyL1);
+		//std::lock_guard<std::mutex> lock(_mutex);
 		_memoriesL1[1]->notifyEvent(pEvent);
 	}
 
-	else {
-		std::lock_guard<std::mutex> lock(_mutexNotifyL1);
+	else if (pEvent.sender == 1) {
+		//std::lock_guard<std::mutex> lock(_mutex);
 		_memoriesL1[0]->notifyEvent(pEvent);
 	}
 
-}
+	else { //Notify all caches
+		   //std::lock_guard<std::mutex> lock(_mutex);
+		_memoriesL1[0]->notifyEvent(pEvent);
+		_memoriesL1[1]->notifyEvent(pEvent);
+	}
 
-int Controller::read(int pAddress) {
-
-	return 0;
 }
 
 void Controller::notifyExternalL2(const BusEvent pEvent) {
 	this->_externalL2->externalNotify(pEvent);
+}
+
+void Controller::notifyL2(const BusEvent pEvent) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	_localL2->internalNotify(pEvent);
 }

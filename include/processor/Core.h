@@ -16,7 +16,6 @@
 #include <memory/CacheL1.h>
 #include <memory/Controller.h>
 #include <logger/Logger.h>
-//#include <bus/BusL1.h>
 
 class Core {
 
@@ -27,11 +26,11 @@ private:
 	int _coreID, _chipID;
 	int _globalID;
 	volatile bool _running;
+	bool _working;
 	std::thread _thread;
 
 	Instruction_gen *_generator;
 	Instruction_gen::Instruction _currentInst;
-	//BusL1 *_busL1;
 	Logger *_logger;
 
 	CacheL1 *_cacheL1;
@@ -43,12 +42,13 @@ private:
 	void printInst(const Instruction_gen::Instruction pInst);
 
 public:
-	Core(/*BusL1 *pBusL1, */Controller *pController, int pChipID, int pCoreID, Instruction_gen *pGenerator,
-			Logger *pLogger);
+	Core(Controller *pController, int pChipID, int pCoreID, Instruction_gen *pGenerator, Logger *pLogger);
 	virtual ~Core();
 
 	void setCoreID(int pCoreID);
 	int getCoreID();
+	Instruction_gen::Instruction* getCurrentInst();
+	volatile bool* getRunning();
 
 	void startCore();
 	void stopCore();

@@ -22,7 +22,7 @@ class CacheL2 {
 protected:
 	static int nextID; //Counter of instances
 
-private:
+public:
 	struct Owner {
 		int chip;
 		int core;
@@ -35,7 +35,21 @@ private:
 		int ramAddress;
 		int data;
 	};
+	CacheL2(RAM *pRam, Controller *pController);
+	virtual ~CacheL2();
 
+	bool checkHit(int pAddress);
+	int localRead(BusEvent pEvent, bool pSetExternal = false);
+	int externalRead(BusEvent pEvent);
+	void externalNotify(BusEvent pEvent);
+	void internalNotify(BusEvent pEvent);
+	void loadFromExternal(int pAddress, int pData, int pOwner);
+	int loadFromRAM(BusEvent pEvent);
+	void localWrite(BusEvent pEvent, const bool pExternalHit);
+
+	CacheL2::Block* getL2();
+
+private:
 	RAM *_ram;
 	Controller *_controller;
 
@@ -46,20 +60,10 @@ private:
 
 	void init();
 	void deleteOwners(Block *pBlock);
-	void updateOwners(Block *pBlock, int pOwner);
-	void uniqueOwner(Block *pBlock, int pOwner);
+	void deleteOneOwner(Block *&pBlock, const int pOwner);
+	void updateOwners(Block *&pBlock, int pOwner);
+	void uniqueOwner(Block *&pBlock, int pOwner);
 
-public:
-	CacheL2(RAM *pRam, Controller *pController);
-	virtual ~CacheL2();
-
-	bool checkHit(int pAddress);
-	int localRequest(BusEvent pEvent);
-	int externalRead(BusEvent pEvent);
-	void externalNotify(BusEvent pEvent);
-	void loadFromExternal(int pAddress, int pData, int pOwner);
-	int loadFromRAM(int pAddress, int pOwner);
-	void writeThroughL1(int pAddress, int pData, int pOwner);
 };
 
 #endif /* CACHEL2_H_ */

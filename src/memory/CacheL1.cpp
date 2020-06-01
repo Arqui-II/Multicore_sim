@@ -29,11 +29,12 @@ void CacheL1::busMonitor() {
 }
 
 void CacheL1::init() {
-	for (auto itr : this->_cacheL1) {
-		itr.data = 0;
-		itr.ramAddress = 0;
-		itr.state = cons::memory::L1_STATES::I;
-		itr.valid = false;
+	for (int i = 0; i < cons::memory::L1_SIZE; i++) {
+		Block *block = &_cacheL1[i];
+		block->data = 0;
+		block->ramAddress = 0;
+		block->state = cons::memory::L1_STATES::I;
+		block->valid = false;
 	}
 }
 
@@ -56,48 +57,50 @@ int CacheL1::request(int pOp, int pAddress, int pData) {
 	bool hit = false;
 	int value = -1; //Undefined
 	Block *block = nullptr;
-	for (auto blockItr : _cacheL1)
-		if (blockItr.ramAddress == pAddress) {
+	for (int i = 0; i < cons::memory::L1_SIZE; i++) {
+		if (_cacheL1[i].ramAddress == pAddress) {
 			hit = true;
-			block = &blockItr;
+			block = &_cacheL1[i];
 		}
+	}
 
 	switch (pOp) {
 	case cons::inst::READ:
 		if (hit
 				&& (block->state == cons::memory::L1_STATES::S || block->state == cons::memory::L1_STATES::M)) {
 			value = read(pAddress % cons::memory::L1_SIZE);
-
 		}
 
 		else { //CACHE MISS OR BLOCK INVALID
-			_controller->notifyL1(BusEvent { cons::bus::EVENTS::READ_MISS, pAddress, this->_coreID });
-			value = _controller->requestL2(BusEvent { cons::bus::EVENTS::READ_MISS, pAddress, _coreID });
+			   //_controller->notifyL1(BusEvent { cons::bus::EVENTS::READ_MISS, pAddress, 0, _coreID });
+			   //std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * (int) cons::multipliers::L2));
+			value = _controller->readRequestL2(
+					BusEvent { cons::bus::EVENTS::READ_MISS, pAddress, 0, _coreID });
+
+			//Block *oldBlock = &_cacheL1[pAddress % cons::memory::L1_SIZE];
+			//Notify L2 about replacement of block
+//			_controller->notifyL2(
+//					BusEvent { cons::bus::EVENTS::WRITE_BACK, oldBlock->ramAddress, 0, _coreID });
 			this->write(pAddress, value, cons::memory::L1_STATES::S); //Write readed value in corresponding block
 		}
 		break;
 
 	case cons::inst::WRITE:
-		_controller->notifyL1(BusEvent { cons::bus::EVENTS::WRITE_MISS, pAddress, this->_coreID });
-		_controller->writeRequestL2(pAddress, pData, this->_coreID); //Write on L2 too
-		this->write(pAddress, pData, cons::memory::L1_STATES::M);
-		//std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * cons::multipliers::WRITE));
+		if (hit
+				&& (block->state == cons::memory::L1_STATES::S || block->state == cons::memory::L1_STATES::M)) {
+			//_controller->notifyL1(BusEvent { cons::bus::EVENTS::WRITE_HIT, pAddress, pData, this->_coreID });
+			_controller->writeRequestL2(
+					BusEvent { cons::bus::EVENTS::WRITE_HIT, pAddress, pData, this->_coreID }); //Write through L2
+			this->write(pAddress, pData, cons::memory::L1_STATES::M);
+		}
 
-//		if (hit
-//				&& (block->state == cons::memory::L1_STATES::S || block->state == cons::memory::L1_STATES::M)) {
-//			//NOTIFY THE WRITE TO THE BUS!!!!
-//			_controller->notifyL1(BusEvent { cons::bus::EVENTS::WRITE_MISS, pAddress, this->_coreID });
-//			_controller->writeRequestL2(pAddress, pData, this->_coreID); //Write on L2 too
-//			this->write(pAddress, pData, cons::memory::L1_STATES::M);
-//			//std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * cons::multipliers::WRITE));
-//		} else {
-//			//WRITE MISS
-//			//NOTIFY THE WRITE MISS TO THE BUS
-//			this->write(pAddress, pData, cons::memory::L1_STATES::M);
-//			value = -2;
-//			std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * cons::multipliers::WRITE));
-//		}
-
+		else {
+			//_controller->notifyL1(BusEvent { cons::bus::EVENTS::WRITE_MISS, pAddress, pData, this->_coreID });
+			//std::this_thread::sleep_for(std::chrono::seconds(cons::BASE_TIME * (int) cons::multipliers::L2));
+			_controller->writeRequestL2(
+					BusEvent { cons::bus::EVENTS::WRITE_MISS, pAddress, pData, this->_coreID }); //Write through L2
+			this->write(pAddress, pData, cons::memory::L1_STATES::M);
+		}
 		break;
 	}
 
@@ -115,13 +118,12 @@ int CacheL1::read(int pBlock) {
 }
 
 int CacheL1::write(int pAddress, int pData, int pState) {
-	_mutex.lock();
+	//std::lock_guard<std::mutex> lock(_mutex);
 	int block = pAddress % cons::memory::L1_SIZE;
 
 	_cacheL1[block].data = pData;
 	_cacheL1[block].ramAddress = pAddress;
 	_cacheL1[block].state = pState;
-	_mutex.unlock();
 
 	return 0;
 }
@@ -138,18 +140,20 @@ BusEvent CacheL1::getEvent() {
  * @param pEvent Event originated in the other core (READ/WRITE MISS)
  */
 void CacheL1::notifyEvent(BusEvent pEvent) {
-//_busEvents.push(pEvent);
-	for (auto blockItr : _cacheL1) {
-		if (blockItr.ramAddress == pEvent.address) {
-			switch (pEvent.event) {
-			case cons::bus::EVENTS::READ_MISS:
-				if (blockItr.state == cons::memory::L1_STATES::M) blockItr.state = cons::memory::L1_STATES::S;
-				break;
+	Block *block = &_cacheL1[pEvent.address % cons::memory::L1_SIZE];
+	if (block->ramAddress == pEvent.address) {
+		switch (pEvent.event) {
+		case cons::bus::EVENTS::READ_MISS:
+			if (block->state == cons::memory::L1_STATES::M) block->state = cons::memory::L1_STATES::S;
+			break;
 
-			case cons::bus::EVENTS::WRITE_MISS:
-				blockItr.state = cons::memory::L1_STATES::I;
-				break;
-			}
+		case cons::bus::EVENTS::WRITE_MISS:
+			block->state = cons::memory::L1_STATES::I;
+			break;
+
+		case cons::bus::EVENTS::WRITE_HIT:
+			block->state = cons::memory::L1_STATES::I;
+			break;
 		}
 	}
 }
@@ -158,7 +162,7 @@ void CacheL1::setCurrentData(int pData) {
 	_currentData = pData;
 }
 
-CacheL1::Block* CacheL1::getCacheL1(){
+CacheL1::Block* CacheL1::getCacheL1() {
 	return _cacheL1;
 }
 

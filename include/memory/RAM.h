@@ -14,24 +14,27 @@
 
 class RAM {
 
-private:
+public:
 	struct Block {
 		int owners[cons::NUMBER_OF_CORES];
 		int data;
 	};
+
+	RAM();
+	virtual ~RAM();
+
+	int read(int pAddress, int pOwner);
+	void write(int pAddress, int pData, int pOwner);
+
+	Block* getRam();
+
+private:
 
 	std::mutex _mutex;
 
 	Block _ram[cons::memory::RAM_SIZE];
 
 	void init();
-
-public:
-	RAM();
-	virtual ~RAM();
-
-	int read(int pAddress, int pOwner);
-	void write(int pAddress, int pData, int pOwner);
 
 };
 

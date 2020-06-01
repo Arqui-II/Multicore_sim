@@ -35,7 +35,7 @@ void Instruction_gen::generateInstructions() {
 		inst.dest = getRandomAddress();
 		inst.data = data;
 		push(inst);
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
 }
 
@@ -46,13 +46,11 @@ void Instruction_gen::generateInstructions() {
  */
 void Instruction_gen::push(Instruction pInstruction) {
 	if ((int) _queue.size() > cons::inst::MAX_INST) {
-		//std::cout << "QUEUE FULL... WAITING..." << std::endl;
 		return;
 	}
 
 	std::lock_guard<std::mutex> lock(_mutex);
 	_queue.push(pInstruction);
-	//std::cout << "New instruction generated!!!" << std::endl;
 	_cond.notify_one();
 }
 
