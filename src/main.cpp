@@ -41,7 +41,7 @@ int main() {
 	chip0.startCores();
 	chip1.startCores();
 
-	std::this_thread::sleep_for(std::chrono::seconds(60));
+	std::this_thread::sleep_for(std::chrono::seconds(30));
 
 	chip0.stopCores();
 	chip1.stopCores();

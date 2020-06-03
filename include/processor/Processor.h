@@ -24,6 +24,7 @@ protected:
 private:
 	int _chipID;
 
+	Controller _controller;
 	Instruction_gen *_instructionGen;
 	RAM *_ram;
 	Logger *_logger;
@@ -34,8 +35,6 @@ private:
 public:
 	Processor(Instruction_gen *pGenerator, RAM *pRam, Logger *pLogger);
 	virtual ~Processor();
-
-	Controller _controller;
 
 	void setControllerExtL2(CacheL2 *pExtL2);
 	CacheL2* getCacheL2();

@@ -13,7 +13,7 @@
 
 namespace cons {
 
-constexpr int BASE_TIME = 2;
+constexpr int BASE_TIME = 4;
 constexpr int NUMBER_OF_CORES = 2;
 constexpr int NUMBER_OF_CHIPS = 2;
 
@@ -27,7 +27,7 @@ constexpr int MAX_INST = 20;
 }
 
 namespace multipliers { //Frecuency multipliers
-constexpr int CALC = 0.5;
+constexpr int CALC = 1;
 constexpr int READ = 2;
 constexpr int WRITE = 3;
 constexpr double L1 = 1;

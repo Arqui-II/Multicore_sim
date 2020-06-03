@@ -45,8 +45,6 @@ private:
 
 	ProcMem _processors[cons::NUMBER_OF_CHIPS];
 	Instruction_gen::Instruction *_coreInstructions[cons::NUMBER_OF_CHIPS * cons::NUMBER_OF_CORES];
-	CacheL1::Block *_chip0L1[cons::memory::L1_NUMBER];
-	CacheL1::Block *_chip1L1[cons::memory::L1_NUMBER];
 	volatile bool *_runningCores[cons::NUMBER_OF_CHIPS * cons::NUMBER_OF_CORES];
 	RAM::Block *_ram;
 

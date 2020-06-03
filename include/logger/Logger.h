@@ -16,6 +16,7 @@
 #include <chrono>
 #include <ctime>
 #include <sstream>
+#include <memory/BusEvent.h>
 
 #define FILE_NAME "/Sim_Log.txt"
 
@@ -25,20 +26,12 @@ private:
 	std::mutex _fileMutex;
 	std::string _logPath;
 	std::ofstream _logFile;
-	//std::thread _thread;
-
-	//volatile bool _running;
-
-	//void display();
 
 public:
 	Logger();
 	virtual ~Logger();
 
-	//void start();
-	//void stop();
-
-	void write(const std::string &pMessage);
+	void write(std::string pMsg);
 };
 
 #endif /* LOGGER_H_ */

@@ -33,30 +33,9 @@ Logger::Logger() {
 Logger::~Logger() {
 }
 
-//void Logger::display() {
-//
-//	while (_running) {
-//
-//	}
-//}
-
-//void Logger::start() {
-//	_running = true;
-//	_thread = std::thread(&Logger::display, this);
-//}
-//
-//void Logger::stop() {
-//	_running = false;
-//	_thread.join();
-//}
-
-void Logger::write(const std::string &pMessage) {
-	_fileMutex.lock();
-//	std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-//	std::stringstream ss;
-//	ss << "[" << std::ctime(&now) << "] " << pMessage;
-	//std::cout << pMessage;
-	_logFile << pMessage;
-	_fileMutex.unlock();
+void Logger::write(std::string pMsg) {
+	std::lock_guard<std::mutex> lock(_fileMutex);
+	_logFile.open(_logPath); //Open file
+	_logFile << pMsg.c_str();
 }
 

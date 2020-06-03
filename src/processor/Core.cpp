@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <iomanip>
 #include <processor/Core.h>
 
 int Core::nextID = 0;
@@ -66,6 +67,9 @@ void Core::startCore() {
 	_running = true;
 	_thread = std::thread(&Core::work, this);
 	_working = true;
+	//std::stringstream msg;
+	//msg << "P:" << _chipID << "," << _coreID << " started execution";
+	//_logger->write(msg.str());
 }
 
 /**
@@ -75,8 +79,6 @@ void Core::stopCore() {
 	_running = false;
 	_thread.join();
 	_working = false;
-	_logger->write(
-			"Chip: " + std::to_string(_chipID) + " Core: " + std::to_string(_coreID) + " STOPPED... \n");
 }
 
 Instruction_gen::Instruction* Core::getCurrentInst() {
